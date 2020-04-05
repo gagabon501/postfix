@@ -3,10 +3,8 @@ class Calcu {
   static evalExp() {
     let inputValue = document.getElementById("opsInput").value, str = '';
     const strRPN = this.toRpn(inputValue);
-    //str = `RPN = [${strRPN}]`;
     const calcRPN = this.calcRPN(strRPN);
     str = `RPN = [${strRPN}] / RESULT = ${calcRPN}`;
-    //console.log(calcRPN);
     document.getElementById('output').innerHTML = str;
   }
 
@@ -14,7 +12,6 @@ class Calcu {
     const optr = '-+/*()';
     let outQ = [], result = 0, op1 = '', op2 = '';
     rpn.forEach((x) => {
-      //console.log(x);
       if(optr.indexOf(x) > -1) {
         op2 = outQ.pop();
         op1 = outQ.pop();
@@ -37,40 +34,14 @@ class Calcu {
             outQ.push(result);
             break;
         }
-        //console.log(outQ);
       } else {
         if (x!=undefined) outQ.push(x);
-
-        //console.log(`hey ${outQ}`)
       }
-      //console.log(outQ);
     })
-    //console.log(outQ);
     return outQ;
   }
 
   static toRpn(str) {
-    // Sample 2: (300+23)*(43-21)/(84+7) - result in RPN --> "300 23 + 43 21 - * 84 7 + /" --> "300,23,+,43,21,-,*,84,7,+,/," --> correct
-    //300,23,+,43,*,21,-,84,/,7,+,
-    //300,23,+,,43,*,21,,84,/,7,
-    //300,23,+,43,*,21,-,84,/,7,+,
-    // Sample 1: 3+4*5/6 - in RPN-> "3 4 5 * 6 / +" --> result from my Calculator: "3,4,5,*,6,/,+" -> CORRECT! 3,4,5,*,6,/,+
-    //                               3,4,5,*,+,6,/
-    // Sample 3: 300+23*43-21/84+7 - in RPN -> "300,23,43,*,+,21,84,/,-,7,+," --> 1295.75 --> CORRECT!
-    // Sample 4: (4+8)*(6-5)/((3-2)*(2+2)) in RPN -> "4 8 + 6 5 - * 3 2 – 2 2 + * /" --> my Calculator --> 4,8,+,6,5,-,*,3,2,-,2,2,+,*,/,
-    //                                                4,8,+,6,*,5,-,3,/,2,-,2,*,2,+,
-    //                                                4,8,+,6,5,-,*,3,2,-,2,2,+,*,/, --> correct
-    // Sample 5: (3*7-(4+8-2)/2) - (4+7+(2*8))/2 = 2.5 --> with this sample, code is still not computing correctly --> RESULT = 21,NaN, ,-7.5
-    // 3,7,*,4,8,+,2,-,2,/,-, , ,4,7,2,8,*,+,2,/,-,
-    // 3,7,*,4,8,+,2,-,2,/,-, , ,4,7,+,2,8,*,+,2,/,-,
-    // RPN = [3,7,*,4,8,+,2,-,2,/,-, , ,4,7,+,2,8,*,+,2,/,-,] / RESULT = 16, ,NaN --> 05-Apr-20
-    // With Samples 1-4 this code is already working, but Sample 5 this is still messy.
-    // Update 05-Apr-20: Sample 5 RPN as computed manually is: "3,7,*,4,8,+,2,-,2,/,-,4,7,+,2,8,*,+,2,/,-,"
-    //                                     my Calculator says: "3,7,*,4,8,+,2,-,2,/,-,4,7,+,2,8,*,+,2,/,-," --> therefore: CORRECT!
-    //                   Problem lies in the coversion from RPN to the actual computation!
-    //                   Got it already! Problem was, the input has space in it!!!!
-    //
-    // 3,7,*,4,8,+,2,-,2,/,-, , ,4,7,+,2,8,*,+,2,/,-
     /*--Algorithm from Wikipedia ---
     while there are tokens to be read do:
       read a token.
@@ -110,15 +81,12 @@ class Calcu {
     arrStr = this.mySplit(str);
 
     arrStr.forEach((token) => {
-
-      if (optr.indexOf(token) === -1) {
-          queue.push(token); //number or operand
-      }
+      if (optr.indexOf(token) === -1) queue.push(token); //number or operand
       else {
         if (token != '(' || token != ')') {
           while (this.chkPre(this.peek(stack)) >= this.chkPre(token) && this.peek(stack) != '(') {
             tmp = stack.pop();
-            if(tmp != undefined || tmp != ' ') queue.push(tmp);
+            if(tmp != undefined) queue.push(tmp);
             if (stack.length <= 0) {
               console.log('mismatched ()');
               break;
@@ -130,7 +98,7 @@ class Calcu {
         if (token === ')') {
           while (this.peek(stack) != '(' && this.peek(stack) != undefined) {
             tmp = stack.pop();
-            if (tmp != undefined || tmp != ' ') queue.push(tmp);
+            if (tmp != undefined) queue.push(tmp);
           }
           if (this.peek(stack) === '(') stack.pop();
         }
@@ -139,7 +107,7 @@ class Calcu {
 
     while (stack.length > 0) {
       tmp = stack.pop();
-      if (tmp != undefined || tmp != ' ') queue.push(tmp);
+      if (tmp != undefined) queue.push(tmp);
     }
     return(queue);
   } //toRpn
@@ -154,22 +122,19 @@ class Calcu {
   static mySplit(s) {
       const optr = '-+/*()';
       let i=0, arrStr = [], str = "";
-
       //iterate the string
       for(i=0; i < s.length; i++) {
         if( optr.indexOf(s[i]) > -1) { //check if the current character is an operator
-          if (str.length>0) {         //if the string accumulator is not empty, then save the accumulated string into the new array and save also the current character (which is an operator) into the new array
+          if (str.length > 0) {         //if the string accumulator is not empty, then save the accumulated string into the new array and save also the current character (which is an operator) into the new array
             arrStr.push(str);
             arrStr.push(s[i]);
             str = ""                   //reset the string accumulator to ready for the next string of operands
           } else arrStr.push(s[i]);    //save the current character (operator) into the new array
-
         } else {
           str += s[i];                //accumulate the string
         }
       }
       if (str.length > 0 ) arrStr.push(str); //if there are remaining string operand, save it into the new array
-
       return arrStr;
   }
 
