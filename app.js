@@ -141,27 +141,9 @@ class Calcu {
   static chkPre(x) {
     let n = 0;
     let optr = [ {op:"(", n: 20}, {op:")", n: 20}, {op:"*", n: 15}, {op:"/", n: 15},{op:"+", n: 14}, {op:"-", n: 14} ];
-    //console.log(optr);
-    //console.log(optr[1].n);
     optr.forEach( e => {
       if (e.op === x ) n = e.n;
     })
-    /*---
-    switch(x) {
-      case "(": n = 20;
-        break;
-      case ")": n = 20;
-        break;
-      case "*": n = 15;
-        break;
-      case "/": n = 15;
-        break;
-      case "+": n = 14;
-        break;
-      case "-": n = 14;
-        break;
-    }
-  ---*/
     return n;
   }
 
